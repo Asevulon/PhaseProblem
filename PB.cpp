@@ -55,4 +55,16 @@ void PB::test()
 {
 	auto sign = CreateSignal(gParam);
 	sDrw.DrawGraph(sign, fd);
+
+	auto csign = toCmplx(sign);
+	fourea(N, csign, -1);
+
+}
+
+
+template<typename T> vector<cmplx> PB::toCmplx(vector<T>& data)
+{
+	vector<cmplx>res;
+	for (auto& item : data)res.push_back(cmplx(item, 0));
+	return res;
 }

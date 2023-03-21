@@ -1,7 +1,7 @@
 #pragma once
 
 #include"Drawer.h"
-
+#include"cmplx.h"
 
 struct GaussParam
 {
@@ -24,7 +24,7 @@ private:
 protected:
 	vector<double> CreateSignal(GaussParam* gP);
 	double gauss(GaussParam gP, double t);
-
+	template<typename T> vector<cmplx>toCmplx(vector<T>& data);
 public:
 	PB();
 	void SetN(int n);
