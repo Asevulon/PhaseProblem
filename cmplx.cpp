@@ -62,7 +62,14 @@ cmplx& cmplx::operator = (cmplx &c)
 	im = c.im;
 	return *this;
 }
-
+double cmplx::abs()
+{
+	return sqrt(re * re + im * im);
+}
+double cmplx::phase()
+{
+	return acos(re / abs());
+}
 // комплексное сопряжение
 cmplx conjg(cmplx c) { return cmplx(c.re, -c.im); }
 cmplx conjg(double re, double im) { return cmplx(re, -im); }

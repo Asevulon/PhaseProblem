@@ -14,6 +14,8 @@ public:
   cmplx() { re=im=0.; }
   cmplx(double x, double y) { re=x; im=y; }
   cmplx& operator = (cmplx&);
+  double abs();
+  double phase();
   friend cmplx operator * (cmplx& x, cmplx& y);
   friend cmplx operator / (cmplx& x, cmplx& y);
   friend cmplx operator / (cmplx& x, double y);

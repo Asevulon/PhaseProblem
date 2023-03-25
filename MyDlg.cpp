@@ -19,23 +19,24 @@
 
 MyDlg::MyDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_PHASEPROBLEM_DIALOG, pParent)
-	, A1(1)
+	, A1(4)
 	, A2(2)
-	, A3(3)
-	, A4(4)
-	, A5(5)
-	, x01(1)
-	, x02(3)
-	, x03(5)
-	, x04(7)
-	, x05(9)
-	, s1(0.125)
-	, s2(0.125)
-	, s3(0.125)
-	, s4(0.125)
-	, s5(0.125)
+	, A3(3.5)
+	, A4(2.5)
+	, A5(3.5)
+	, x01(150)
+	, x02(380)
+	, x03(600)
+	, x04(800)
+	, x05(920)
+	, s1(3)
+	, s2(3)
+	, s3(3)
+	, s4(3)
+	, s5(3)
 	, N(1024)
-	, fd(100)
+	, fd(1)
+	, tau(1e-6)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -60,12 +61,15 @@ void MyDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT15, s5);
 	DDX_Text(pDX, IDC_EDIT16, N);
 	DDX_Text(pDX, IDC_EDIT17, fd);
+	DDX_Text(pDX, IDC_EDIT18, tau);
+	DDX_Control(pDX, IDC_LIST1, log);
 }
 
 BEGIN_MESSAGE_MAP(MyDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &MyDlg::OnBnClickedOk)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -82,6 +86,9 @@ BOOL MyDlg::OnInitDialog()
 
 	// TODO: добавьте дополнительную инициализацию
 	pb.SetSDrwHWND(GetDlgItem(IDC_PICTURE_SIGNAL)->GetSafeHwnd());
+	pb.SetSPDDrwHWND(GetDlgItem(IDC_PICTURE_SPD)->GetSafeHwnd());
+
+	lg = &log;
 
 	return TRUE;  // возврат значения TRUE, если фокус не передан элементу управления
 }
@@ -128,7 +135,10 @@ void MyDlg::OnBnClickedOk()
 {
 	// TODO: добавьте свой код обработчика уведомлений
 	TerminateThread(thPb, 0);
+	log.ResetContent();
+	stime = clock();
 	UpdateData();
+	pb.SetTau(tau);
 	pb.SetFd(fd);
 	pb.SetN(N);
 	pb.SetGParam(
@@ -139,7 +149,11 @@ void MyDlg::OnBnClickedOk()
 		GaussParam(A5, s5, x05)
 	);
 	thPb = CreateThread(NULL, NULL, thrPB, this, NULL, NULL);
-	
+	CString str;
+	str.Format(L"Начат расчет...");
+	log.InsertString(-1, str);
+	tid = SetTimer(1, TIMERVAL, NULL);
+
 }
 
 DWORD WINAPI thrPB(LPVOID lp)
@@ -147,6 +161,39 @@ DWORD WINAPI thrPB(LPVOID lp)
 	MyDlg* dlg = (MyDlg*)lp;
 	
 	dlg->pb.test();
-
+	dlg->KillTimer(dlg->tid);
+	CString str;
+	str.Format(L"Выполнено!");
+	dlg->log.InsertString(-1, str);
+	str.Format(L"Число итераций: %d", dlg->pb.ctr);
+	dlg->log.InsertString(-1, str);
+	str.Format(L"Время выполнения: %.1f", (clock() - dlg->stime)/1000.);
+	dlg->log.InsertString(-1, str);
+	dlg->log.SetTopIndex(dlg->log.GetCount() - 1);
 	return 0;
+}
+
+
+
+
+afx_msg void MyDlg::OnTimer(UINT_PTR idEvent)
+{
+	CString str;
+	str.Format(L"Число итераций: %d", pb.ctr);
+	log.InsertString(-1, str);
+	
+	str.Format(L"Текущее время выполнения: %.1f", (clock() - stime)/1000.);
+	log.InsertString(-1, str);
+	str.Format(L" ");
+	log.InsertString(-1, str);
+	log.SetTopIndex(log.GetCount() - 1);
+
+	pb.NeedToDraw = true;
+	while (!pb.toDraw.empty())
+	{
+		pb.Draw();
+		str.Format(L"Отрисовано!");
+		log.InsertString(-1, str);
+
+	}
 }
