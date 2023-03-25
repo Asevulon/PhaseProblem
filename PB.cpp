@@ -113,13 +113,13 @@ vector<cmplx>PB::Feinup(vector<double>& spd)
 	while (1)
 	{
 		fourea(N, S, 1);
-		
+
 		removeNegative(S);
-		/*if (NeedToDraw)
+		if (NeedToDraw)
 		{
 			NeedToDraw = false;
 			toDraw.push_back(GetReal(S));
-		}*/
+		}
 		if (mistake(S, S_1) < tau)break;
 		S_1 = S;
 		fourea(N, S, -1);
@@ -151,7 +151,7 @@ void PB::removeNegative(vector<cmplx>& data)
 {
 	for (int i = 0; i < data.size(); i++)
 	{
-		data[i].im = 0;
+		//data[i].im = 0;
 		if (data[i].re < 0)data[i] = cmplx();
 	}
 }
