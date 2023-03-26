@@ -76,8 +76,10 @@ void PB::test()
 	Spd = spd;
 
 	auto S = Feinup(spd);
-	sDrw.DrawTwoSignals(sign, GetReal(S), fd);
+	res = GetReal(S);
+	sDrw.DrawTwoSignals(sign, res, fd);
 	log.close();
+	
 
 }
 vector<double> PB::GetReal(vector<cmplx>& data)
@@ -151,8 +153,8 @@ void PB::removeNegative(vector<cmplx>& data)
 {
 	for (int i = 0; i < data.size(); i++)
 	{
-		//data[i].im = 0;
-		if (data[i].re < 0)data[i] = cmplx();
+		data[i].im = 0;
+		if (data[i].re < 0)data[i].re = 0;
 	}
 }
 void PB::correctAbs(vector<cmplx>& data, vector<double>& spd)
@@ -210,4 +212,98 @@ double PB::CalcE(vector<double>& data)
 	double res = 0;
 	for (auto& item : data)res += item * item;
 	return res;
+}
+
+
+void PB::RedrawFromData()
+{
+	if (sgn.empty())return;
+	if (res.empty())return;
+	sDrw.DrawTwoSignals(sgn, res, fd);
+}
+
+
+void PB::fixShift()
+{
+	int maxs = GetMaxId(sgn);
+	int maxr = GetMaxId(res);
+	int shift = maxs - maxr;
+
+
+	if (shift == 0)
+	RedrawFromData();
+
+
+	vector<double>resMod;
+
+
+	if (shift > 0)
+	{
+		for (int i = N - shift - 1; i < N; i++)resMod.push_back(res[i]);
+		for (int i = 0; i < N - shift - 1; i++)resMod.push_back(res[i]);
+	}
+	else
+	{
+		for (int i = -shift; i < N; i++)resMod.push_back(res[i]);
+		for (int i = 0; i < -shift; i++)resMod.push_back(res[i]);
+	}
+	res = resMod;
+	RedrawFromData();
+}
+
+
+int PB::GetMaxId(vector<double>& data)
+{
+	int res = 0;
+	for (int i = 1; i < data.size(); i++)
+	{
+		if (data[res] < data[i])res = i;
+	}
+	return res;
+}
+
+
+void PB::Mirror()
+{
+	vector<double>resMod;
+	for (int i = N - 1; i > -1; i--)resMod.push_back(res[i]);
+	res = resMod;
+	RedrawFromData();
+}
+
+
+void PB::Fixing()
+{
+	fixShift();
+	if (mistake(res, sgn) > 1)
+	{
+		Mirror();
+		fixShift();
+	}
+}
+
+
+double PB::mistake(vector<double>& data, vector<double>& data2)
+{
+	double res = 0;
+	for (int i = 0; i < data.size(); i++)
+	{
+		double temp = data[i] - data2[i];
+		res += temp * temp;
+	}
+	return res;
+}
+
+
+double PB::estimate()
+{
+	double mist = 0;
+	for (int i = 0; i < res.size(); i++)
+	{
+		double temp = res[i] - sgn[i];
+		mist += temp * temp;
+	}
+	double Es = 0;
+	for (auto& item : sgn)Es += item * item;
+	return 100. * mist / Es;
 }

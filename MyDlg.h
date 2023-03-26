@@ -4,7 +4,7 @@
 
 #pragma once
 
-#define TIMERVAL 100
+#define TIMERVAL 300
 #include"PB.h"
 
 
@@ -60,6 +60,11 @@ public:
 	afx_msg void MyDlg::OnTimer(UINT_PTR idEvent);
 	CListBox log;
 	float stime;
+	afx_msg void OnBnClickedButton2();
+	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedCheck1();
+	bool compare;
+	CEdit EstCtr;
 };
 
 

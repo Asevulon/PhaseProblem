@@ -68,7 +68,9 @@ double cmplx::abs()
 }
 double cmplx::phase()
 {
-	return acos(re / abs());
+	double y = acos(re / abs());
+	if (im < 0)y = -y;
+	return y;
 }
 // комплексное сопряжение
 cmplx conjg(cmplx c) { return cmplx(c.re, -c.im); }

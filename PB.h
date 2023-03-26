@@ -30,6 +30,7 @@ private:
 	Drawer spdDrw;
 	vector<double> sgn;
 	vector<double>Spd;
+	vector<double>res;
 	ofstream log;
 protected:
 	vector<double> CreateSignal(GaussParam* gP);
@@ -46,6 +47,8 @@ protected:
 
 	double CalcE(vector<cmplx>& data);
 	double CalcE(vector<double>& data);
+	int PB::GetMaxId(vector<double>& data);
+	double PB::mistake(vector<double>& data, vector<double>& data2);
 
 public:
 	PB();
@@ -60,5 +63,10 @@ public:
 	bool NeedToDraw;
 	vector<vector<double>>toDraw;
 	void Draw();
+	void PB::RedrawFromData();
+	void PB::fixShift();
+	void PB::Mirror();
+	void PB::Fixing();
+	double PB::estimate();
 
 };

@@ -37,6 +37,7 @@ MyDlg::MyDlg(CWnd* pParent /*=nullptr*/)
 	, N(1024)
 	, fd(1)
 	, tau(1e-6)
+	, compare(false)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -63,6 +64,7 @@ void MyDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT17, fd);
 	DDX_Text(pDX, IDC_EDIT18, tau);
 	DDX_Control(pDX, IDC_LIST1, log);
+	DDX_Control(pDX, IDC_EDIT19, EstCtr);
 }
 
 BEGIN_MESSAGE_MAP(MyDlg, CDialogEx)
@@ -70,6 +72,9 @@ BEGIN_MESSAGE_MAP(MyDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &MyDlg::OnBnClickedOk)
 	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON2, &MyDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON1, &MyDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_CHECK1, &MyDlg::OnBnClickedCheck1)
 END_MESSAGE_MAP()
 
 
@@ -170,6 +175,15 @@ DWORD WINAPI thrPB(LPVOID lp)
 	str.Format(L"Время выполнения: %.1f", (clock() - dlg->stime)/1000.);
 	dlg->log.InsertString(-1, str);
 	dlg->log.SetTopIndex(dlg->log.GetCount() - 1);
+
+	double est = dlg->pb.estimate();
+	str.Format(L"Оценка точности: %.4f", str);
+	str += CString('%');
+	dlg->EstCtr.SetWindowTextW(str);
+
+	if (dlg->compare)dlg->pb.Fixing();
+	else dlg->pb.RedrawFromData();
+
 	return 0;
 }
 
@@ -196,4 +210,24 @@ afx_msg void MyDlg::OnTimer(UINT_PTR idEvent)
 		log.InsertString(-1, str);
 
 	}
+}
+
+void MyDlg::OnBnClickedButton2()
+{
+	// TODO: добавьте свой код обработчика уведомлений
+	pb.fixShift();
+}
+
+
+void MyDlg::OnBnClickedButton1()
+{
+	// TODO: добавьте свой код обработчика уведомлений
+	pb.Mirror();
+}
+
+
+void MyDlg::OnBnClickedCheck1()
+{
+	// TODO: добавьте свой код обработчика уведомлений
+	compare = !compare;
 }
