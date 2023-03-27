@@ -215,7 +215,7 @@ afx_msg void MyDlg::OnTimer(UINT_PTR idEvent)
 void MyDlg::OnBnClickedButton2()
 {
 	// TODO: добавьте свой код обработчика уведомлений
-	pb.fixShift();
+	pb.FixShiftLooping();
 }
 
 

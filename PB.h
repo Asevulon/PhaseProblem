@@ -68,5 +68,5 @@ public:
 	void PB::Mirror();
 	void PB::Fixing();
 	double PB::estimate();
-
+	bool PB::FixShiftLooping();
 };

@@ -274,11 +274,11 @@ void PB::Mirror()
 
 void PB::Fixing()
 {
-	fixShift();
-	if (mistake(res, sgn) > 1)
+	
+	if (!FixShiftLooping())
 	{
 		Mirror();
-		fixShift();
+		FixShiftLooping();
 	}
 }
 
@@ -306,4 +306,24 @@ double PB::estimate()
 	double Es = 0;
 	for (auto& item : sgn)Es += item * item;
 	return 100. * mist / Es;
+}
+
+
+bool PB::FixShiftLooping()
+{
+	for (int i = 0; i < N; i++)
+	{
+		vector<double>tempres;
+		tempres.push_back(res[N - 1]);
+		for (int g = 0; g < N - 1; g++)tempres.push_back(res[g]);
+		res = tempres;
+		if (mistake(res, sgn) < 1)
+		{
+			RedrawFromData();
+			return true;
+		}
+	}
+	RedrawFromData();
+
+	return false;
 }
