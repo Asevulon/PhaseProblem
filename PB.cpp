@@ -64,6 +64,8 @@ double PB::gauss(GaussParam gPar, double t)
 
 void PB::test()
 {
+	srand(time(NULL));
+
 	auto sign = CreateSignal(gParam);
 	sDrw.DrawGraph(sign, fd);
 	sgn = sign;
@@ -311,13 +313,15 @@ double PB::estimate()
 
 bool PB::FixShiftLooping()
 {
+	double cap = (CalcE(res) / 100.);
 	for (int i = 0; i < N; i++)
 	{
 		vector<double>tempres;
 		tempres.push_back(res[N - 1]);
 		for (int g = 0; g < N - 1; g++)tempres.push_back(res[g]);
 		res = tempres;
-		if (mistake(res, sgn) < 1)
+		double m = mistake(res, sgn);
+		if (m < cap);
 		{
 			RedrawFromData();
 			return true;
