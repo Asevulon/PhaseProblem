@@ -64,6 +64,9 @@ double PB::gauss(GaussParam gPar, double t)
 
 void PB::test()
 {
+	srand(time(NULL));
+
+
 	auto sign = CreateSignal(gParam);
 	sDrw.DrawGraph(sign, fd);
 	sgn = sign;
@@ -75,8 +78,17 @@ void PB::test()
 	spdDrw.DrawSpectr(spd, fd, -100);
 	Spd = spd;
 
-	auto S = Feinup(spd);
-	res = GetReal(S);
+	double mist = 0;
+	do
+	{
+		auto S = Feinup(spd);
+		res = GetReal(S);
+		mist = CalcE(sgn) - CalcE(res);
+		mist *= mist;
+		log << mist << endl;
+	} while (mist > tau);
+
+
 	sDrw.DrawTwoSignals(sign, res, fd);
 	log.close();
 	
@@ -317,7 +329,7 @@ bool PB::FixShiftLooping()
 		tempres.push_back(res[N - 1]);
 		for (int g = 0; g < N - 1; g++)tempres.push_back(res[g]);
 		res = tempres;
-		if (mistake(res, sgn) < 1)
+		if (mistake(res, sgn) < CalcE(res) / 10.)
 		{
 			RedrawFromData();
 			return true;

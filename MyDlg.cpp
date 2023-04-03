@@ -206,9 +206,6 @@ afx_msg void MyDlg::OnTimer(UINT_PTR idEvent)
 	while (!pb.toDraw.empty())
 	{
 		pb.Draw();
-		str.Format(L"Отрисовано!");
-		log.InsertString(-1, str);
-
 	}
 }
 
